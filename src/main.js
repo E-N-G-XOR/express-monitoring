@@ -1,12 +1,16 @@
 const makeApiMiddleware = require("api-express-exporter");
 const express = require("express");
 const app = express();
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const url = require('url');
+const proxy = require('express-http-proxy');
 
 app.use(makeApiMiddleware());
 
-app.use('/metrics', createProxyMiddleware({ target: 'http://127.0.0.1:9991/metrics', changeOrigin: true }));
+const apiProxy = proxy('http://127.0.0.1:9991/metrics', {
+    proxyReqPathResolver: req => url.parse(req.baseUrl).path
+});
 
+app.use('/metrics', apiProxy);
 app.use("/api/sub", require("./sub_module"));
 
 app.get("/api", (req, res) => {
