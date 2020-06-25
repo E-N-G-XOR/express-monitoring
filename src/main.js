@@ -2,7 +2,17 @@ const makeApiMiddleware = require("api-express-exporter");
 const express = require("express");
 const app = express();
 
+const proxy = require('http-proxy').createProxyServer({
+    host: 'http://localhost:9991/metrics',
+});
+
 app.use(makeApiMiddleware());
+
+app.use('/api/metrics', function(req, res, next) {
+    proxy.web(req, res, {
+        target: 'http://localhost:9991/metrics'
+    }, next);
+});
 
 app.use("/api/sub", require("./sub_module"));
 
