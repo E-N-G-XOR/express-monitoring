@@ -7,8 +7,8 @@ const proxy = require('express-http-proxy');
 app.use(makeApiMiddleware());
 
 const getPath = req => require('url').parse(req.url).path;
-const createProxy = ({hostname = 'localhost', port = 80, path = ''}) =>
-+  proxy(`${hostname}:${port}`, { proxyReqPathResolver: req => `${path}${getPath(req)}` });
+const createProxy = ({hostname = 'localhost', port = 9991, path = ''}) =>
++  proxy(`${hostname}:${port}`, { proxyReqPathResolver: req => `${path}` });
 
 app.use('/metrics', createProxy({port: 9991, path: '/metrics'})); // http://localhost/api/foo -> http://localhost:3000/api/foo 
 app.use("/api/sub", require("./sub_module"));
